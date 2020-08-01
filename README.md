@@ -115,6 +115,19 @@ const bastionHostLinux = new ec2.BastionHostLinux(this, 'BastionHostLinux', {
 - securityGroup - Use security group created from security stack.
 - subnetSelection - Create the instance in public subnet.
 
+## cdk.json
+
+Create project-name and env context variables in cdk.json
+
+```
+{
+  "context": {
+    "project-name": "serverless",
+    "env": "dev" 
+  }
+}
+```
+
 ## lib/rds-stack.ts
 
 Get the vpc, bastionSecurityGroup, kmsRds from vpc stack
