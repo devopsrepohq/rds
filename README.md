@@ -172,6 +172,10 @@ const templatedSecret = new secretsmanager.Secret(this, 'TemplatedSecret', {
 });
 ```
 
+- description - Define the description for secrets manager template
+- generateSecretString - Define the secret constraint rule
+- removalPolicy - Remove this secrets manager template when removing this stack
+
 Create RDS instances
 
 ```
@@ -196,6 +200,14 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   storageEncryptionKey: rdsKey
 });
 ```
+
+- engine - Specify to use aurora mysql engine version 5.7.12
+- instanceProps - Use T3.small instances and place it into isolated subnets
+- masterUser - Define db user and password
+- defaultDatabaseName - Define the default database name
+- instances - Define the number of instances for this aurora clusters
+- removalPolicy - Remove this rds cluster when removing this stack
+- storageEncryptionKey - Specify the encryption key for this aurora clusters
 
 Allow bastion host to connect the RDS instances
 
