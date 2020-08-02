@@ -17,7 +17,7 @@ export class RdsStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: RdsStackProps) {
     super(scope, id, props);
 
-    // Get the vpc, bastionSecurityGroup, kmsRds from vpc stack
+    // Get the vpc, bastionSecurityGroup, kmsRds from vpc, security and kms stacks
     const { vpc, bastionSecurityGroup, kmsRds } = props;
 
     // Get projectName and env from context variables

@@ -130,7 +130,7 @@ Create project-name and env context variables in cdk.json
 
 ## lib/rds-stack.ts
 
-Get the vpc, bastionSecurityGroup, kmsRds from vpc stack
+Get the vpc, bastionSecurityGroup, kmsRds from vpc, security and kms stacks
 
 ```
 const { vpc, bastionSecurityGroup, kmsRds } = props;
