@@ -27,6 +27,19 @@ You will need the following before utilize this CDK stack:
 
 # Stack Explain
 
+## cdk.json
+
+Define project-name and env context variables in cdk.json
+
+```
+{
+  "context": {
+    "project-name": "container",
+    "env": "dev" 
+  }
+}
+```
+
 ## lib/vpc-stack.ts
 
 Setup standard VPC with public, private, and isolated subnets.
@@ -112,19 +125,6 @@ const bastionHostLinux = new ec2.BastionHostLinux(this, 'BastionHostLinux', {
 - vpc - Use vpc created from vpc stack.
 - securityGroup - Use security group created from security stack.
 - subnetSelection - Create the instance in public subnet.
-
-## cdk.json
-
-Create project-name and env context variables in cdk.json
-
-```
-{
-  "context": {
-    "project-name": "serverless",
-    "env": "dev" 
-  }
-}
-```
 
 ## lib/rds-stack.ts
 
