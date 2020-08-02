@@ -143,10 +143,10 @@ new cdk.CfnOutput(this, 'SshCommand', { value: sshCommand})
 
 ## lib/rds-stack.ts
 
-Get the vpc, bastionSecurityGroup, kmsRds from vpc, security and kms stacks
+Get the vpc, bastionSecurityGroup, rdsKey from vpc, security and kms stacks
 
 ```
-const { vpc, bastionSecurityGroup, kmsRds } = props;
+const { vpc, bastionSecurityGroup, rdsKey } = props;
 ```
 
 Get projectName and env from context variables
@@ -193,7 +193,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   defaultDatabaseName: `${projectName}${env}`,
   instances: 1,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
-  storageEncryptionKey: kmsRds
+  storageEncryptionKey: rdsKey
 });
 ```
 

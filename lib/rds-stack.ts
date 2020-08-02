@@ -10,15 +10,15 @@ import { IKey } from '@aws-cdk/aws-kms';
 interface RdsStackProps extends cdk.StackProps {
   vpc: IVpc;
   bastionSecurityGroup: ISecurityGroup;
-  kmsRds: IKey;
+  rdsKey: IKey;
 }
 
 export class RdsStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: RdsStackProps) {
     super(scope, id, props);
 
-    // Get the vpc, bastionSecurityGroup, kmsRds from vpc, security and kms stacks
-    const { vpc, bastionSecurityGroup, kmsRds } = props;
+    // Get the vpc, bastionSecurityGroup, rdsKey from vpc, security and kms stacks
+    const { vpc, bastionSecurityGroup, rdsKey } = props;
 
     // Get projectName and env from context variables
     const projectName = this.node.tryGetContext('project-name');
@@ -56,7 +56,7 @@ export class RdsStack extends cdk.Stack {
       defaultDatabaseName: `${projectName}${env}`,
       instances: 1,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
-      storageEncryptionKey: kmsRds
+      storageEncryptionKey: rdsKey
     });
 
     // Allow bastion host to connect the RDS instances
