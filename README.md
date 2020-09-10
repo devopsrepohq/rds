@@ -1,20 +1,18 @@
-# RDS
-
 Use this CDK stack to create a RDS instances and allow bastion host to access it.
 
-![RDS architecture](https://github.com/devopsrepohq/rds/blob/master/_docs/rds.png?raw=true)
+![RDS architecture](https://images.prismic.io/devopsrepo/48a1780a-4cd5-4b96-a707-2cad1f6dcd77_rds.png?auto=compress,format)
 
-# What is it?
+## What is it?
 
 Amazon Relational Database Service (Amazon RDS) makes it easy to set up, operate, and scale a relational database in the cloud.
 
-# Features
+## Features
 
 - [x] Deploy a RDS Aurora Mysql instances
 - [x] Use secrets manager to generate database password
 - [x] Setup to allow bastion host to access it
 
-# Prerequisites
+## Prerequisites
 
 You will need the following before utilize this CDK stack:
 
@@ -25,13 +23,13 @@ You will need the following before utilize this CDK stack:
 - [AWS CDK Tookit](https://cdkworkshop.com/15-prerequisites/500-toolkit.html)
 - [AWS Toolkit VSCode Extension](https://github.com/devopsrepohq/aws-toolkit)
 
-# Stack Explain
+## Stack Explain
 
-## cdk.json
+### cdk.json
 
 Define project-name and env context variables in cdk.json
 
-```
+```json
 {
   "context": {
     "project-name": "container",
@@ -41,11 +39,11 @@ Define project-name and env context variables in cdk.json
 }
 ```
 
-## lib/vpc-stack.ts
+### lib/vpc-stack.ts
 
 Setup standard VPC with public, private, and isolated subnets.
 
-```
+```javascript
 const vpc = new ec2.Vpc(this, 'Vpc', {
   maxAzs: 3,
   natGateways: 1,
@@ -77,21 +75,21 @@ const vpc = new ec2.Vpc(this, 'Vpc', {
 
 Create flowlog and log the vpc traffic into cloudwatch
 
-```
+```javascript
 vpc.addFlowLog('FlowLog');
 ```
 
-## lib/security-stack.ts
+### lib/security-stack.ts
 
 Get vpc create from vpc stack
 
-```
+```javascript
 const { vpc } = props;
 ```
 
 Create security group for bastion host
 
-```
+```javascript
 const bastionSecurityGroup = new ec2.SecurityGroup(this, 'BastionSecurityGroup', {
   vpc: vpc,
   allowAllOutbound: true,
@@ -107,21 +105,21 @@ const bastionSecurityGroup = new ec2.SecurityGroup(this, 'BastionSecurityGroup',
 
 Allow ssh access to bastion host
 
-```
+```javascript
 bastionSecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'SSH access');
 ```
 
-## lib/bastion-stack.ts
+### lib/bastion-stack.ts
 
 Get the vpc and bastionSecurityGroup from vpc and security stacks.
 
-```
+```javascript
 const { vpc, bastionSecurityGroup } = props;
 ```
 
 Create bastion host instance in public subnet
 
-```
+```javascript
 const bastionHostLinux = new ec2.BastionHostLinux(this, 'BastionHostLinux', {  
   vpc: vpc,
   securityGroup: bastionSecurityGroup,
@@ -137,7 +135,7 @@ const bastionHostLinux = new ec2.BastionHostLinux(this, 'BastionHostLinux', {
 
 Display commands for connect bastion host using ec2 instance connect
 
-```
+```javascript
 const createSshKeyCommand = 'ssh-keygen -t rsa -f my_rsa_key';
 const pushSshKeyCommand = `aws ec2-instance-connect send-ssh-public-key --region ${cdk.Aws.REGION} --instance-id ${bastionHostLinux.instanceId} --availability-zone ${bastionHostLinux.instanceAvailabilityZone} --instance-os-user ec2-user --ssh-public-key file://my_rsa_key.pub ${profile ? `--profile ${profile}` : ''}`;
 const sshCommand = `ssh -o "IdentitiesOnly=yes" -i my_rsa_key ec2-user@${bastionHostLinux.instancePublicDnsName}`;
@@ -147,24 +145,24 @@ new cdk.CfnOutput(this, 'PushSshKeyCommand', { value: pushSshKeyCommand });
 new cdk.CfnOutput(this, 'SshCommand', { value: sshCommand});
 ```
 
-## lib/rds-stack.ts
+### lib/rds-stack.ts
 
 Get the vpc, bastionSecurityGroup, rdsKey from vpc, security and kms stacks
 
-```
+```javascript
 const { vpc, bastionSecurityGroup, rdsKey } = props;
 ```
 
 Get projectName and env from context variables
 
-```
+```javascript
 const projectName = this.node.tryGetContext('project-name');
 const env = this.node.tryGetContext('env');
 ```
 
 Create templated secret
 
-```
+```javascript
 const templatedSecret = new secretsmanager.Secret(this, 'TemplatedSecret', {
   description: 'Templated secret used for RDS password',
   generateSecretString: {
@@ -184,7 +182,7 @@ const templatedSecret = new secretsmanager.Secret(this, 'TemplatedSecret', {
 
 Create RDS instances
 
-```
+```javascript
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
     version: rds.AuroraMysqlEngineVersion.VER_5_7_12
@@ -217,27 +215,27 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
 
 Allow bastion host to connect the RDS instances
 
-```
+```javascript
 cluster.connections.allowDefaultPortFrom(bastionSecurityGroup, 'Allow access from bastion host');
 ```
 
 Deploy all the stacks to your aws account.
 
-```
+```bash
 cdk deploy '*'
 or
 cdk deploy '*' --profile your_profile_name
 ```
 
-# Useful commands
+## Useful commands
 
-## NPM commands
+### NPM commands
 
  * `npm run build`   compile typescript to js
  * `npm run watch`   watch for changes and compile
  * `npm run test`    perform the jest unit tests
 
-## Toolkit commands
+### Toolkit commands
 
  * `cdk list (ls)`            Lists the stacks in the app
  * `cdk synthesize (synth)`   Synthesizes and prints the CloudFormation template for the specified stack(s)
@@ -253,7 +251,7 @@ cdk deploy '*' --profile your_profile_name
  * `cdk docs (doc)`           Opens the CDK API reference in your browser
  * `cdk doctor`               Checks your CDK project for potential problems
 
- # Pricing
+## Pricing
 
 As this cdk stack will create Aurora database service, please refer the following link for pricing
 
